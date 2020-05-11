@@ -33,10 +33,6 @@ db=firebase.database()
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-    def chat_message(self, event):
-        print("evvvvv",event)
-        m = event['message']
-        self.send(text_data=m)
     def disconnect(self, close_code):
         print(close_code,"disconnecting")
     def receive(self, text_data):
