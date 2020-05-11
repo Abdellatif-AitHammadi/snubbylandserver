@@ -22,7 +22,7 @@ from django.views.decorators.csrf import csrf_protect
 import json
 import pyrebase
 from asgiref.sync import async_to_sync
-
+import requests
 config = json.loads(os.environ["FIREBASE_CONFIG"])
 firebase = pyrebase.initialize_app(config)
 db=firebase.database()
@@ -32,12 +32,6 @@ db=firebase.database()
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
-        # Join room group
-        # self.channel_name="hello"
-        # async_to_sync(self.channel_layer.group_add)(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
         self.accept()
     def chat_message(self, event):
         print("evvvvv",event)
@@ -63,6 +57,7 @@ class GameConsumer(WebsocketConsumer):
             players=dict(db.child('players').get().val())
             levels_pip=db.child('levels_pip').get().val()   
             id="@"+str(random.randint(1000000000,1999999999))
+            requests.post("http://snubby.herokuapp.com/api",data={"@":id})
             players[id]={
                                     "x":"555",
                                     "y":"666",
