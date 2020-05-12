@@ -37,6 +37,12 @@ class GameConsumer(WebsocketConsumer):
         self.id2="-1"
         self.l=0
         self.is_online=1
+        # Accept the connection
+        channel_layer = get_channel_layer()
+        async_to_sync(self.channel_layer.group_add)(
+            "2020",
+            "2020"
+        )
         self.accept()
     # Receive message from the group
     def channel_message(self, event):
