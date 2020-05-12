@@ -32,68 +32,49 @@ db=firebase.database()
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
+        self.id="@"+str(random.randint(1000000000,1999999999))
+        self.l=0
         self.accept()
-    def chat_message(self, event):
-        print("evvvvv",event)
-        m = event['message']
-        self.send(text_data=m)
     def disconnect(self, close_code):
+        levels_pip=db.child('levels_pip').get().val()
+        if levels_pip[self.l]==self.id:
+            levels_pip[self.l]=""
+            db.child('levels_pip').set(levels_pip)
         print(close_code,"disconnecting")
     def receive(self, text_data):
         if text_data=="DATAZERO":
-            players={"id":  {
-                        "x":"0",
-                        "y":"0",
-                        "level":"0",
-                        "token": "00",
-                        "id2":''
-                    }}
-            levels_pip=list(50*[""])
-            db.child('players').set(players)
-            db.child('levels_pip').set(levels_pip)
-            self.send(text_data="data reset succesfully .")
-            return
-        if text_data[0]=="+":
-            players=dict(db.child('players').get().val())
-            levels_pip=db.child('levels_pip').get().val()   
-            id="@"+str(random.randint(1000000000,1999999999))
-            requests.post("http://snubby.herokuapp.com/api",data={"@":id})
-            players[id]={
-                                    "x":"555",
-                                    "y":"666",
-                                    "level":"todo",
-                                    "id2":'12'
-                                }
-            db.child('players').set(players)
-            self.send(text_data=id)
+            # players={"id":  {
+            #             "self.id2":''
+            #         }}
+            # levels_pip=list(50*[""])
+            # db.child('players').set(players)
+            # db.child('levels_pip').set(levels_pip)
+            # self.send(text_data="data reset succesfully .")
             return
         if text_data[0]=="@":
-            id,l=text_data.split()
-            l=int(l)
-            players=dict(db.child('players').get().val())
+            e,l=text_data.split()
+            self.l=int(l)
             levels_pip=db.child('levels_pip').get().val()
-            if levels_pip[l]=="":
-                levels_pip[l]=id
+            if levels_pip[self.l]=="":
+                levels_pip[self.l]=seld.id
                 db.child('levels_pip').set(levels_pip)
-                while(levels_pip[l]==id):
+                while(levels_pip[self.l]==self.id):
                     levels_pip=db.child('levels_pip').get().val()
-                players=dict(db.child('players').get().val())
-                self.send(text_data=players[id]["id2"])
-            if levels_pip[l]!="":
-                id2=levels_pip[l]
-                levels_pip[l]=''
-                players[id]['id2']=id2
-                players[id2]['id2']=id
-                db.child('players').set(players)
-                db.child('levels_pip').set(levels_pip)  
-                db.child('snubbyland/%s/%s'%(id2,id)).set("0 0")
-                db.child('snubbyland/%s/%s'%(id,id2)).set("0 0")
-                self.send(text_data=id2)
-            self.send(text_data="@abdellatif")
+                self.id2=levels_pip[self.l]
+                levels_pip[self.l]=""
+                self.send(text_data=self.id2)
+                db.child('levels_pip').set(levels_pip)
+            if levels_pip[self.l]!="":
+                self.id2=levels_pip[self.l]
+                levels_pip[l]=self.id
+                db.child('levels_pip').set(levels_pip)
+                db.child('snubbyland/%s/%s'%(self.id2,seld.id)).set("0 0")
+                db.child('snubbyland/%s/%s'%(seld.id,self.id2)).set("0 0")
+                self.send(text_data=self.id2)
             return
-        x,y,id,id2=text_data.split()
-        db.child('snubbyland/%s/%s'%(id,id2)).set(x+" "+ y)
-        self.send(text_data=db.child('snubbyland/%s/%s'%(id2,id)).get().val())
+        x,y=text_data.split()
+        db.child('snubbyland/%s/%s'%(seld.id,self.id2)).set(x+" "+ y)
+        self.send(text_data=db.child('snubbyland/%s/%s'%(self.id2,seld.id)).get().val())
 
 
 
