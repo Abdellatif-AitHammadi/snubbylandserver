@@ -61,7 +61,7 @@ class GameConsumer(WebsocketConsumer):
                 "2020",
                 {
                     'type': 'channel_message',
-                    'message': message
+                    'message': text_data
                 }
             )
         if text_data=="-":
