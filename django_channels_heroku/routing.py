@@ -43,13 +43,9 @@ class GameConsumer(WebsocketConsumer):
         print(close_code,"disconnecting")
     def receive(self, text_data):
         if text_data=="DATAZERO":
-            # players={"id":  {
-            #             "self.id2":''
-            #         }}
-            # levels_pip=list(50*[""])
-            # db.child('players').set(players)
-            # db.child('levels_pip').set(levels_pip)
-            # self.send(text_data="data reset succesfully .")
+            levels_pip=list(50*[""])
+            db.child('levels_pip').set(levels_pip)
+            self.send(text_data="data reset succesfully .")
             return
         if text_data[0]=="@":
             e,l=text_data.split()
@@ -66,7 +62,7 @@ class GameConsumer(WebsocketConsumer):
                 db.child('levels_pip').set(levels_pip)
             if levels_pip[self.l]!="":
                 self.id2=levels_pip[self.l]
-                levels_pip[l]=self.id
+                levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
                 db.child('snubbyland/%s/%s'%(self.id2,seld.id)).set("0 0")
                 db.child('snubbyland/%s/%s'%(seld.id,self.id2)).set("0 0")
