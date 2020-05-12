@@ -1,3 +1,5 @@
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.urls import path
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -21,7 +23,6 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_protect
 import json
 import pyrebase
-from asgiref.sync import async_to_sync
 import requests
 config = json.loads(os.environ["FIREBASE_CONFIG"])
 firebase = pyrebase.initialize_app(config)
@@ -37,6 +38,23 @@ class GameConsumer(WebsocketConsumer):
         self.l=0
         self.is_online=1
         self.accept()
+    def send_channel_message(group_name, message):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            '{}'.format(group_name),
+            {
+                'type': 'channel_message',
+                'message': message
+            }
+        )
+    # Receive message from the group
+    def channel_message(self, event):
+        message = event['message']
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'message': message
+        }))
     def disconnect(self, close_code):
         levels_pip=db.child('levels_pip').get().val()
         if levels_pip[self.l]==self.id:
@@ -46,6 +64,10 @@ class GameConsumer(WebsocketConsumer):
             print("this is 43 line")
         print(close_code,"disconnecting")
     def receive(self, text_data):
+        if text_data[0]=="*":
+            send_channel_message("2020",text_data)
+        if text_data=="-":
+            self.close()
         if text_data[0]=="@":
             e,l=text_data.split()
             self.l=int(l)
