@@ -64,6 +64,7 @@ class GameConsumer(WebsocketConsumer):
                     'message': text_data
                 }
             )
+            return
         if text_data=="-":
             self.close()
         if text_data[0]=="@":
