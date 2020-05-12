@@ -40,13 +40,9 @@ class GameConsumer(WebsocketConsumer):
         if levels_pip[self.l]==self.id:
             levels_pip[self.l]=""
             db.child('levels_pip').set(levels_pip)
+            print("this is 43 line")
         print(close_code,"disconnecting")
     def receive(self, text_data):
-        if text_data=="DATAZERO":
-            levels_pip=list(50*[""])
-            db.child('levels_pip').set(levels_pip)
-            self.send(text_data="data reset succesfully .")
-            return
         if text_data[0]=="@":
             e,l=text_data.split()
             self.l=int(l)
