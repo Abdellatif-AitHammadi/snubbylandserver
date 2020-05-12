@@ -33,6 +33,7 @@ db=firebase.database()
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.id="@"+str(random.randint(1000000000,1999999999))
+        self.id2="-1"
         self.l=0
         self.accept()
     def disconnect(self, close_code):
@@ -54,7 +55,6 @@ class GameConsumer(WebsocketConsumer):
                     levels_pip=db.child('levels_pip').get().val()
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=""
-                self.send(text_data=self.id2)
                 db.child('levels_pip').set(levels_pip)
             if levels_pip[self.l]!="":
                 self.id2=levels_pip[self.l]
@@ -62,7 +62,7 @@ class GameConsumer(WebsocketConsumer):
                 db.child('levels_pip').set(levels_pip)
                 db.child('snubbyland/%s/%s'%(self.id2,self.id)).set("0 0")
                 db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("0 0")
-                self.send(text_data=self.id2)
+            self.send(text_data=self.id+" VS "+self.id2)
             return
         x,y=text_data.split()
         db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(x+" "+ y)
