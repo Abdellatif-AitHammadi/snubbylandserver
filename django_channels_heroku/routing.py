@@ -27,23 +27,23 @@ import requests
 config = json.loads(os.environ["FIREBASE_CONFIG"])
 firebase = pyrebase.initialize_app(config)
 db=firebase.database()
+
+
+
+
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.id="@"+str(random.randint(1000000000,1999999999))
         self.id2="-1"
         self.l=0
         self.accept()
+    def disconnect(self, close_code):
+        levels_pip=db.child('levels_pip').get().val()
+        if levels_pip[self.l]==self.id:
+            levels_pip[self.l]=""
+            db.child('levels_pip').set(levels_pip)
+        print(close_code,"disconnecting")
     def receive(self, text_data):
-        if text_data[0]=="*":
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "2020",
-                {
-                    'type': 'channel_message',
-                    'message': text_data
-                }
-            )
-            return
         if text_data[0]=="@":
             e,l=text_data.split()
             self.l=int(l)
@@ -51,7 +51,7 @@ class GameConsumer(WebsocketConsumer):
             if levels_pip[self.l]=="":
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
-                while(levels_pip[self.l]==self.id and self.is_online):
+                while(levels_pip[self.l]==self.id):
                     levels_pip=db.child('levels_pip').get().val()
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=""
