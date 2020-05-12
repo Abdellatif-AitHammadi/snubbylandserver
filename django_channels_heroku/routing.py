@@ -35,10 +35,12 @@ class GameConsumer(WebsocketConsumer):
         self.id="@"+str(random.randint(1000000000,1999999999))
         self.id2="-1"
         self.l=0
+        self.is_online=1
         self.accept()
     def disconnect(self, close_code):
         levels_pip=db.child('levels_pip').get().val()
         if levels_pip[self.l]==self.id:
+            self.is_online=0
             levels_pip[self.l]=""
             db.child('levels_pip').set(levels_pip)
             print("this is 43 line")
@@ -51,7 +53,7 @@ class GameConsumer(WebsocketConsumer):
             if levels_pip[self.l]=="":
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
-                while(levels_pip[self.l]==self.id):
+                while(levels_pip[self.l]==self.id and self.is_online):
                     levels_pip=db.child('levels_pip').get().val()
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=""
