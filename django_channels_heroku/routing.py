@@ -53,6 +53,7 @@ class GameConsumer(WebsocketConsumer):
                 db.child('levels_pip').set(levels_pip)
                 while(levels_pip[self.l]==self.id):
                     levels_pip=db.child('levels_pip').get().val()
+                    self.send(text_data="@@@@")
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=""
                 db.child('levels_pip').set(levels_pip)
