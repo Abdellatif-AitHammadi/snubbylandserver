@@ -38,15 +38,6 @@ class GameConsumer(WebsocketConsumer):
         self.l=0
         self.is_online=1
         self.accept()
-    def send_channel_message(group_name, message):
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            '{}'.format(group_name),
-            {
-                'type': 'channel_message',
-                'message': message
-            }
-        )
     # Receive message from the group
     def channel_message(self, event):
         message = event['message']
@@ -65,7 +56,14 @@ class GameConsumer(WebsocketConsumer):
         print(close_code,"disconnecting")
     def receive(self, text_data):
         if text_data[0]=="*":
-            send_channel_message("2020",text_data)
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "2020",
+                {
+                    'type': 'channel_message',
+                    'message': message
+                }
+            )
         if text_data=="-":
             self.close()
         if text_data[0]=="@":
