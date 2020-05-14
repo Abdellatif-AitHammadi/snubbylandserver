@@ -44,6 +44,20 @@ class GameConsumer(WebsocketConsumer):
             db.child('levels_pip').set(levels_pip)
         print(close_code,"disconnecting")
     def receive(self, text_data):
+        #to save level 
+        if "serialization::archive" in text_data:
+            db.child("levels/"+self.id).set(text_data)
+            self.send(text_data=self.id)
+            return
+        #to get level ex: L1545215151
+        if text_data[0]=="L":
+            l=db.child("levels/"+text_data[1:]).get().val()
+            if l==None:
+                self.send(text_data=".")
+            else:
+                self.send(text_data=l)
+            return
+        #to play online
         if text_data[0]=="@":
             e,l=text_data.split()
             self.l=int(l)
