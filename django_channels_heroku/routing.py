@@ -10,7 +10,6 @@ import random
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-# import requests
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import os
@@ -29,8 +28,6 @@ firebase = pyrebase.initialize_app(config)
 db=firebase.database()
 
 
-
-
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.id="@"+str(random.randint(1000000000,1999999999))
@@ -44,19 +41,6 @@ class GameConsumer(WebsocketConsumer):
             db.child('levels_pip').set(levels_pip)
         print(close_code,"disconnecting")
     def receive(self, text_data):
-        #to save level 
-        if "serialization::archive" in text_data:
-            db.child("levels/"+self.id).set(text_data)
-            self.send(text_data=self.id)
-            return
-        #to get level ex: L1545215151
-        if text_data[0]=="L":
-            l=db.child("levels/"+text_data[1:]).get().val()
-            if l==None:
-                self.send(text_data=".")
-            else:
-                self.send(text_data=l)
-            return
         #to play online
         if text_data[0]=="@":
             e,l=text_data.split()
@@ -65,12 +49,16 @@ class GameConsumer(WebsocketConsumer):
             if levels_pip[self.l]=="":
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
-                while(levels_pip[self.l]==self.id):
-                    levels_pip=db.child('levels_pip').get().val()
-                self.id2=levels_pip[self.l]
-                levels_pip[self.l]=""
-                db.child('levels_pip').set(levels_pip)
-            if levels_pip[self.l]!="":
+                # while(levels_pip[self.l]==self.id):
+                #     levels_pip=db.child('levels_pip').get().val()
+                # self.id2=levels_pip[self.l]
+                # levels_pip[self.l]=""
+                # db.child('levels_pip').set(levels_pip)
+                self.send(text_data=".")
+            elif levels_pip[self.l]==self.l:
+                self.send(text_data=".")
+                return
+            else :#levels_pip[self.l]!="":
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
