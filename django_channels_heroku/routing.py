@@ -31,8 +31,6 @@ db=firebase.database()
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.id="@"+str(random.randint(1000000000,1999999999))
-        self.id2="-1"
-        self.l=0
         self.accept()
     def disconnect(self, close_code):
         levels_pip=db.child('levels_pip').get().val()
@@ -41,15 +39,19 @@ class GameConsumer(WebsocketConsumer):
             db.child('levels_pip').set(levels_pip)
         print(close_code,"disconnecting")
     def receive(self, text_data):
+        print("receiveing : ",text_data)
         #to play online
         if text_data[0]=="@":
             try:
                 e,l=text_data.split()
             except:
-                self.send(text_data="505")
+                self.send(text_data="506")
                 return
             self.l=int(l)
             levels_pip=db.child('levels_pip').get().val()
+            if levels_pip=None:
+                self.send(text_data="data error")
+                return
             if levels_pip[self.l]=="":
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
