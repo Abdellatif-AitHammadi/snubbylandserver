@@ -40,19 +40,17 @@ class GameConsumer(WebsocketConsumer):
         print(close_code,"disconnecting")
     def receive(self, text_data):
         print("receiveing : ",text_data)
-        #to play online
+        data=text_data.split()
         if text_data[0]=="@":
-            try:
-                e,l=text_data.split()
-            except:
+            if len(data)<2:
                 self.send(text_data="506")
                 return
-            self.l=int(l)
+            e,self.l=data[0],int(data[1])
             levels_pip=db.child('levels_pip').get().val()
             if levels_pip=None:
                 self.send(text_data="data error")
                 return
-            if levels_pip[self.l]=="":
+            elif levels_pip[self.l]=="":
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
                 # while(levels_pip[self.l]==self.id):
@@ -71,12 +69,14 @@ class GameConsumer(WebsocketConsumer):
                 db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("0 0")
                 self.send(text_data=self.id+" VS "+self.id2)
             return
-        try:
-            x,y=text_data.split()
+        if len(data)<2:
+            self.send(text_data="505")
+            return
+        else:
+            x,y=data[0],data[1]
             db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(x+" "+ y)
             self.send(text_data=db.child('snubbyland/%s/%s'%(self.id2,self.id)).get().val())
-        except:
-            self.send(text_data="505")
+
 
 
 class LevelConsumer(WebsocketConsumer):
