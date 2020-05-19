@@ -93,7 +93,7 @@ class LevelConsumer(WebsocketConsumer):
             db.child("levels_data/"+self.id).set(text_data)
             self.send(text_data=self.id)
         elif text_data[0]=="L":#to get level ex: L1545215151
-            l=db.child("levels_data/"+text_data[1:]).get().val()
+            l=db.child("levels_data/"+text_data).get().val()
             if l==None:
                 self.send(text_data=".")
             else:
