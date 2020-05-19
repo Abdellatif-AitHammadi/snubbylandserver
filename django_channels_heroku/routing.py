@@ -66,7 +66,7 @@ class GameConsumer(WebsocketConsumer):
                 # self.id2=levels_pip[self.l]
                 # levels_pip[self.l]=""
                 # db.child('levels_pip').set(levels_pip)
-            elif levels_pip[self.l]==self.l:
+            elif levels_pip[self.l]==self.id:
                 self.send(text_data=".")
             else :#levels_pip[self.l]!="":
                 self.id2=levels_pip[self.l]
