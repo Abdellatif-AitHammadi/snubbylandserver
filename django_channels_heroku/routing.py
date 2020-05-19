@@ -68,7 +68,7 @@ class GameConsumer(WebsocketConsumer):
                 # db.child('levels_pip').set(levels_pip)
             elif levels_pip[self.l]==self.id:
                 self.send(text_data=".")
-            else :#levels_pip[self.l]!="":
+            else :
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
@@ -87,6 +87,7 @@ class LevelConsumer(WebsocketConsumer):
         self.id="@"+str(random.randint(1000000000,1999999999))
         self.accept()
     def receive(self, text_data):
+        print(text_data)
         #to save level 
         if "serialization::archive" in text_data:
             db.child("levels/"+self.id).set(text_data)
