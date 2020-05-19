@@ -47,7 +47,7 @@ class GameConsumer(WebsocketConsumer):
                 return
             e,self.l=data[0],int(data[1])
             levels_pip=db.child('levels_pip').get().val()
-            if levels_pip=None:
+            if levels_pip==None:
                 self.send(text_data="data error")
                 return
             elif levels_pip[self.l]=="":
