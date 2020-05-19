@@ -84,23 +84,22 @@ class GameConsumer(WebsocketConsumer):
 
 class LevelConsumer(WebsocketConsumer):
     def connect(self):
-        self.id="@"+str(random.randint(1000000000,1999999999))
+        self.id="L"+str(random.randint(100,199))
         self.accept()
     def receive(self, text_data):
         print(text_data)
         #to save level 
         if "serialization::archive" in text_data:
-            db.child("levels/"+self.id).set(text_data)
+            db.child("levels_data/"+self.id).set(text_data)
             self.send(text_data=self.id)
-            return
-        #to get level ex: L1545215151
-        if text_data[0]=="L":
-            l=db.child("levels/"+text_data[1:]).get().val()
+        elif text_data[0]=="L":#to get level ex: L1545215151
+            l=db.child("levels_data/"+text_data[1:]).get().val()
             if l==None:
                 self.send(text_data=".")
             else:
                 self.send(text_data=l)
-            return
+        else:
+            self.send(text_data="invalide commande")
 
 application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
