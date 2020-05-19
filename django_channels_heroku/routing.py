@@ -41,24 +41,29 @@ class GameConsumer(WebsocketConsumer):
     def receive(self, text_data):
         print("receiveing : ",text_data)
         data=text_data.split()
-        if text_data[0]=="@":
-            if len(data)<2:
-                self.send(text_data="506")
-                return
+        if text_data=="":
+            pass
+        elif text_data=="get":
+            self.send(text_data=str(db.child("levels_pip").get().val()))
+        elif text_data=="set":
+            db.child("levels_pip").set(list(50*[""]))
+            self.send(text_data="ok")
+        elif len(data)<2:
+            self.send(text_data="args must bi >=2")
+        elif text_data[0]=="@":
             e,self.l=data[0],int(data[1])
             levels_pip=db.child('levels_pip').get().val()
             if levels_pip==None:
-                self.send(text_data="data error")
-                return
+                self.send(text_data="data_base Error")
             elif levels_pip[self.l]=="":
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
+                self.send(text_data=".")
                 # while(levels_pip[self.l]==self.id):
                 #     levels_pip=db.child('levels_pip').get().val()
                 # self.id2=levels_pip[self.l]
                 # levels_pip[self.l]=""
                 # db.child('levels_pip').set(levels_pip)
-                self.send(text_data=".")
             elif levels_pip[self.l]==self.l:
                 self.send(text_data=".")
             else :#levels_pip[self.l]!="":
@@ -68,10 +73,6 @@ class GameConsumer(WebsocketConsumer):
                 db.child('snubbyland/%s/%s'%(self.id2,self.id)).set("0 0")
                 db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("0 0")
                 self.send(text_data=self.id+" VS "+self.id2)
-            return
-        if len(data)<2:
-            self.send(text_data="505")
-            return
         else:
             x,y=data[0],data[1]
             db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(x+" "+ y)
