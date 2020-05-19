@@ -43,7 +43,11 @@ class GameConsumer(WebsocketConsumer):
     def receive(self, text_data):
         #to play online
         if text_data[0]=="@":
-            e,l=text_data.split()
+            try:
+                e,l=text_data.split()
+            except:
+                self.send(text_data="505")
+                return
             self.l=int(l)
             levels_pip=db.child('levels_pip').get().val()
             if levels_pip[self.l]=="":
