@@ -57,19 +57,20 @@ class GameConsumer(WebsocketConsumer):
                 self.send(text_data=".")
             elif levels_pip[self.l]==self.l:
                 self.send(text_data=".")
-                return
             else :#levels_pip[self.l]!="":
                 self.id2=levels_pip[self.l]
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
                 db.child('snubbyland/%s/%s'%(self.id2,self.id)).set("0 0")
                 db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("0 0")
-            self.send(text_data=self.id+" VS "+self.id2)
+                self.send(text_data=self.id+" VS "+self.id2)
             return
-        x,y=text_data.split()
-        db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(x+" "+ y)
-        self.send(text_data=db.child('snubbyland/%s/%s'%(self.id2,self.id)).get().val())
-
+        try:
+            x,y=text_data.split()
+            db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(x+" "+ y)
+            self.send(text_data=db.child('snubbyland/%s/%s'%(self.id2,self.id)).get().val())
+        except:
+            self.send(text_data="505")
 
 
 class LevelConsumer(WebsocketConsumer):
