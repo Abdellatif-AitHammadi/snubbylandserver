@@ -31,6 +31,8 @@ db=firebase.database()
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.id="@"+str(random.randint(1000000000,1999999999))
+        self.l=0
+        self.id2=0
         self.accept()
     def disconnect(self, close_code):
         levels_pip=db.child('levels_pip').get().val()
