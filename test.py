@@ -13,7 +13,7 @@ async def hello():
 			greeting = await websocket.recv()
 			print(greeting)
 		else:
-			await websocket.send("LL146")
+			await websocket.send("L146")
 			greeting = await websocket.recv()
 			print(greeting)
 
