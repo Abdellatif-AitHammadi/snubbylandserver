@@ -41,21 +41,13 @@ class GameConsumer(WebsocketConsumer):
         if levels_pip[self.l]==self.id:
             levels_pip[self.l]=""
             db.child('levels_pip').set(levels_pip)
-        if self.win==0:
+        if self.lose:
             db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("disconnect")
         print("disconnecting")
     def receive(self, text_data):
-        print("receiveing : ",text_data)
+        print(self.id,"receiveing : ",text_data)
         data=text_data.split()
-        if text_data=="WIN":
-            pass
-        elif text_data=="LOSE":
-            pass
-        elif text_data=="":
-            pass
-        elif text_data=="":
-            pass
-        elif text_data=="get":
+        if text_data=="get":
             self.send(text_data=str(db.child("levels_pip").get().val()))
         elif text_data=="set":
             db.child("levels_pip").set(list(50*[""]))
@@ -87,11 +79,12 @@ class GameConsumer(WebsocketConsumer):
             elif tt=="WIN":
                 self.lose=1
                 self.send(text_data=tt)
+                print(self.id,"sending : ",tt)
             else:
                 x,y=data[0],data[1]
                 db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(x+" "+ y)
                 self.send(text_data=tt)
-
+                print(self.id,"sending : ",tt)
 
 
 class LevelConsumer(WebsocketConsumer):
