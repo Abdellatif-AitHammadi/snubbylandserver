@@ -41,8 +41,7 @@ class GameConsumer(WebsocketConsumer):
         if levels_pip[self.l]==self.id:
             levels_pip[self.l]=""
             db.child('levels_pip').set(levels_pip)
-        if self.lose:
-            db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("disconnect")
+        db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("disconnect")
         print("disconnecting")
     def receive(self, text_data):
         print(self.id,"receiveing : ",text_data)
