@@ -83,7 +83,7 @@ class GameConsumer(WebsocketConsumer):
             elif tt=="WIN":
                 self.lose=1
                 self.send(text_data=tt)
-            elif:
+            else tt[0]=="-":
                 db.child('snubbyland/%s/%s'%(self.id2,self.id)).set("0 0")
                 self.send(text_data=tt)
             else:
