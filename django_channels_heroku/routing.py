@@ -23,6 +23,7 @@ from django.views.decorators.csrf import csrf_protect
 import json
 import pyrebase
 import requests
+from time import sleep
 config = json.loads(os.environ["FIREBASE_CONFIG"])
 firebase = pyrebase.initialize_app(config)
 db=firebase.database()
@@ -39,7 +40,8 @@ class GameConsumer(WebsocketConsumer):
         if levels_pip[self.l]==self.id:
             levels_pip[self.l]=""
             db.child('levels_pip').set(levels_pip)
-        db.child('snubbyland/%s/%s'%(self.id,self.id2)).remove()
+        sleep(2)
+        db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("disconnect")
         print(close_code,"disconnecting")
     def receive(self, text_data):
         print("receiveing : ",text_data)
@@ -68,11 +70,6 @@ class GameConsumer(WebsocketConsumer):
                 levels_pip[self.l]=self.id
                 db.child('levels_pip').set(levels_pip)
                 self.send(text_data=".")
-                # while(levels_pip[self.l]==self.id):
-                #     levels_pip=db.child('levels_pip').get().val()
-                # self.id2=levels_pip[self.l]
-                # levels_pip[self.l]=""
-                # db.child('levels_pip').set(levels_pip)
             elif levels_pip[self.l]==self.id:
                 self.send(text_data=".")
             else :
