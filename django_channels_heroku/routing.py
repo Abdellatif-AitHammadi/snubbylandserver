@@ -55,7 +55,7 @@ class GameConsumer(WebsocketConsumer):
         elif text_data=="WIN":
             db.child('snubbyland/%s/%s'%(self.id,self.id2)).set("WIN")
         elif text_data[0]=="-":# -4 coins
-            db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(text_data[1:])
+            db.child('snubbyland/%s/%s'%(self.id,self.id2)).set(text_data)
         elif len(data)<2:
             self.send(text_data="args must bi >=2")
         elif text_data[0]=="@":
