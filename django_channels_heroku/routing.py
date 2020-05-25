@@ -84,7 +84,7 @@ class GameConsumer(WebsocketConsumer):
             tt=db.child('snubbyland/%s/%s'%(self.id2,self.id)).get().val()
             if tt==None:
                 self.send(text_data="disconnect")
-            elif tt="WIN":
+            elif tt=="WIN":
                 self.lose=1
                 self.send(text_data=tt)
             else:
